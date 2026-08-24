@@ -1,0 +1,23 @@
+{
+  "skill_name": "lvgl-pro-expert",
+  "evals": [
+    {
+      "id": 0,
+      "prompt": "Create an LVGL Pro project for a 320x240 round display (radius 120) that shows a battery level indicator. It should have an arc widget showing battery percentage (0-100%), a label in the center showing the percentage as text like '75%', and a small status label below saying 'Charging' or 'Discharging'. Use subjects for the battery level and charging state so they can be updated from C code.",
+      "expected_output": "A complete 3-file LVGL Pro project (project.xml with round display, globals.xml with int and string subjects, screen XML with arc + labels + data binding). Should use bind_text-fmt for the percentage label, correct &#10; handling if needed, and all widgets must have name attributes.",
+      "files": []
+    },
+    {
+      "id": 1,
+      "prompt": "I have an existing LVGL Pro project. I need to add a new 'Wi-Fi Settings' screen. It should have a title label 'Wi-Fi Settings', a list of 5 network names as buttons (each button has a label child showing the network name), and a back button at the bottom that navigates back to the home screen. Use flex column layout. The project targets a 480x320 display.",
+      "expected_output": "A single screen XML file (screens/screen_wifi.xml) with proper <screen><view> structure, flex_flow column layout, 5 lv_button widgets each containing an lv_label, a back button with <screen_load_event> navigation, all widgets named, and reasonable styling.",
+      "files": []
+    },
+    {
+      "id": 2,
+      "prompt": "Create an LVGL Pro thermostat dashboard for a 800x480 display. It needs: a top bar with the current time (label) and a settings gear icon button; a main area with a large arc for temperature (15-30°C) with +/- buttons; a mode dropdown (Heat/Cool/Auto/Fan/Off); and a bottom bar with 3 tab-like buttons for Home/Schedule/Energy. Use data binding for the temperature value. Make it look professional with proper spacing.",
+      "expected_output": "A complete multi-file project with project.xml (800x480), globals.xml (subjects for temperature, styles for consistent theming), and a screen XML with complex nested flex layouts, arc with data binding, dropdown with &#10; options, proper spacing values, and all widgets named. Should demonstrate competent use of flex_flow, style_pad_*, and layout composition.",
+      "files": []
+    }
+  ]
+}

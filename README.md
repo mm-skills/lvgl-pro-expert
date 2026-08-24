@@ -42,15 +42,11 @@ examples/
 
 ### As an AI Skill
 
-Add to your project via [skill-manager](https://github.com/mm-skills/skill-manager):
+Copy or clone this directory to `.agents/skills/lvgl-pro-expert/` in your project:
 
 ```bash
-.agents/skills/skill-manager/scripts/add.sh '{"name": "lvgl-pro-expert"}'
+git clone https://github.com/mm-skills/lvgl-pro-expert.git .agents/skills/lvgl-pro-expert
 ```
-
-### Manual
-
-Copy this directory to `.agents/skills/lvgl-pro-expert/` in your project.
 
 ## Compatibility
 
