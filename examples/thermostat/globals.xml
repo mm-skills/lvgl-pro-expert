@@ -1,0 +1,11 @@
+<globals>
+    <api></api>
+    <consts></consts>
+    <subjects>
+        <int name="subject_temp" default="22" />
+        <int name="subject_mode" default="0" />
+    </subjects>
+    <images></images>
+    <fonts></fonts>
+    <styles></styles>
+</globals>

@@ -1,0 +1,11 @@
+<screen>
+    <view flex_flow="column"
+          style_flex_main_place="center"
+          style_flex_cross_place="center"
+          style_pad_row="16">
+        <lv_label name="title" text="Hello, LVGL Pro!" />
+        <lv_button name="btn_get_started">
+            <lv_label name="btn_label" text="Get Started" align="center" />
+        </lv_button>
+    </view>
+</screen>

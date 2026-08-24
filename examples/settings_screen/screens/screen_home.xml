@@ -1,0 +1,15 @@
+<screen permanent="true">
+    <view flex_flow="column"
+          style_flex_main_place="center"
+          style_flex_cross_place="center"
+          style_pad_row="16"
+          style_bg_color="0xffffff"
+          style_text_color="0x111827">
+        <bind_style name="style_dark" subject="subject_dark_mode" ref_value="1" />
+        <lv_label name="title" text="Home Screen" />
+        <lv_button name="btn_settings">
+            <lv_label name="btn_settings_label" text="Settings" align="center" />
+            <screen_create_event screen="screen_settings" trigger="clicked" />
+        </lv_button>
+    </view>
+</screen>

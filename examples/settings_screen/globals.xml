@@ -1,0 +1,13 @@
+<globals>
+    <api></api>
+    <consts></consts>
+    <subjects>
+        <int name="subject_dark_mode" default="0" />
+    </subjects>
+    <images></images>
+    <fonts></fonts>
+    <styles>
+        <style name="style_light" bg_color="0xffffff" text_color="0x111827" />
+        <style name="style_dark" bg_color="0x1f2937" text_color="0xf9fafb" />
+    </styles>
+</globals>
