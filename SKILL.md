@@ -214,6 +214,23 @@ Styles evaluate once, before props are bound. Therefore, an `$api_prop` **cannot
 <view style_bg_color="$color"/>
 ```
 
+### 12. Project Naming Conflicts
+
+Never name your project `lvgl`. This will cause a namespace conflict with the LVGL library itself. Choose a unique name specific to your product.
+
+### 13. Editing Generated C Files
+
+Never edit generated C files manually. Any manual changes made to the generated C files will be overwritten and lost the next time you hit "Export Code" in the editor. Modify the source XML instead.
+
+### 14. Inline Styles and Sizing
+
+Never write inline styles in your XML (e.g., `<lv_obj style_bg_color="0x000000" />`). Always define named `<style>` blocks in a `<styles>` section. 
+Additionally, prefer using `width="content"`, `height="content"`, or `100%` over hardcoded pixel values to make components flexible and reusable.
+
+### 15. Custom Widget Naming
+
+Always use the `wd_` prefix for custom widget XML files (e.g. `wd_list`, `wd_menu`) to clearly distinguish them from standard components or built-in widgets.
+
 ---
 
 ## Core Workflow
@@ -323,6 +340,7 @@ lvglpro validate /path/to/project/
 | Official examples (components, globals) | `references/upstream/official-examples.md` |
 | CLI tools and MCP server | `references/upstream/cli-and-ai-tools.md` |
 | Translations / i18n | `references/upstream/translations.md` |
+| Project structure, naming, and custom widget conventions | `references/upstream/blog-conventions.md` |
 
 ---
 

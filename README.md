@@ -54,6 +54,13 @@ git clone https://github.com/mm-skills/lvgl-pro-expert.git .agents/skills/lvgl-p
 - **LVGL** v9.5.0
 - Python 3.8+ (for scripts)
 
+## Sources & Credits
+
+1. `lvgl/lvgl_pro` GitHub repo — https://github.com/lvgl/lvgl_pro (AGENTS.md, tutorials, widget schemas, official docs)
+2. *LVGL Pro Project Structure and Naming Guide* by Felix Biego — https://lvgl.io/blog/lvgl-pro-project-structure-guide
+3. *Building a Custom Widget with Scroll Effects in LVGL Pro* by Felix Biego — https://lvgl.io/blog/tutorial-lvgl-pro-custom-widgets
+4. Official LVGL Pro docs — https://lvgl.io/docs/pro
+
 ## License
 
 MIT — see [LICENSE](LICENSE).
