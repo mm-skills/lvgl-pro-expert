@@ -453,12 +453,12 @@ for all tools; only the filename and one key differ:
 }
 ```
 
-> ⚠️ **Antigravity limitation (as of Aug 2026):** The LVGL MCP server uses
-> kapa.ai's **Public (OAuth)** authentication, which requires an interactive
-> Google/GitHub login popup on first use. Antigravity's SSE transport does not
-> support this OAuth flow, so the server returns "Unauthorized". Until kapa.ai
-> adds API-key auth for this server or Antigravity adds OAuth support,
-> **Antigravity users must use Scenario C** (offline references) instead.
+> **Antigravity setup:** After adding the config, open **Customizations →
+> Installed MCP Servers** and click the **Authenticate** button next to `lvgl`.
+> Complete the browser-based Google/GitHub login. The tool
+> (`search_lvgl_light_and_versatile_graphics_library_knowledge_sources`) is
+> lazy-loaded and may appear "disabled" in the UI — this is cosmetic; it works
+> when called via `call_mcp_tool`.
 
 **GitHub Copilot (VS Code) — note `servers` not `mcpServers`:**
 ```json
@@ -476,7 +476,7 @@ After adding the file, restart the assistant (or reload the project) and
 approve the server when prompted. The MCP server is **read-only** — it only
 answers documentation questions.
 
-### Scenario C — No MCP available (offline, CI, restricted sandbox, Antigravity)
+### Scenario C — No MCP available (offline, CI, restricted sandbox)
 
 This skill's `references/` folder is the MCP-less fallback. It was built
 specifically to give agents the same grounding without network access.
