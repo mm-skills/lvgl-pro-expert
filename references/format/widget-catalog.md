@@ -410,12 +410,19 @@ No widget-specific API props. Size/style via universal props.
 **`type` enum:** `none` · `line` · `bar` · `stacked` · `scatter`
 **`update_mode` enum:** `shift` (scrolls left) · `circular` (ring buffer)
 
+> [!NOTE]
+> Sub-elements (`<lv_chart-series>`, `<lv_chart-axis>`, `<lv_chart-cursor>`) are
+> **not widgets** — they do NOT take a `name` attribute. Only top-level widget elements
+> need `name`. The `values` prop uses comma-space separated integers: `"10, 20, 15, 30"`.
+
 **Sub-elements:**
 ```xml
-<lv_chart name="chart" type="line" point_count="20" update_mode="shift">
-    <lv_chart-series color="0x4CAF50" axis="primary_y" values="10,20,15,30" />
-    <lv_chart-series color="0x2196F3" axis="secondary_y" values="5,8,12,6" />
+<lv_chart name="chart" type="bar" point_count="20" update_mode="shift"
+          hor_div_line_count="4" ver_div_line_count="4">
+    <lv_chart-series color="0x4CAF50" axis="primary_y" values="10, 20, 15, 30, 25" />
+    <lv_chart-series color="0x2196F3" axis="secondary_y" values="1, 5, 4, 8, 6" />
     <lv_chart-axis axis="primary_y" min_value="0" max_value="100" />
+    <lv_chart-axis axis="secondary_y" min_value="0" max_value="10" />
     <lv_chart-cursor color="0xFF5722" dir="right" />
 </lv_chart>
 ```
@@ -423,6 +430,7 @@ No widget-specific API props. Size/style via universal props.
 
 **Parts:** `main`, `items`, `indicator`, `cursor`, `scrollbar`
 > **MCP:** `"lv_chart series cursor axis configuration properties"`
+
 
 ---
 
