@@ -202,6 +202,18 @@ not on individual `<data>` or `<bin>` children:
    </images>
 ```
 
+### 11. Styles are initialized once
+
+Styles evaluate once, before props are bound. Therefore, an `$api_prop` **cannot** go into a `<style>`. It must go directly onto the widget:
+
+```xml
+❌ <!-- NO: style evaluates once, before props are bound -->
+<style name="style_bg" bg_color="$color"/>
+
+✅ <!-- YES -->
+<view style_bg_color="$color"/>
+```
+
 ---
 
 ## Core Workflow
@@ -307,6 +319,10 @@ lvglpro validate /path/to/project/
 | Design touch-friendly layouts for embedded displays | `references/ux/design-guidelines.md` |
 | Debug validation errors or editor issues | `references/troubleshooting.md` |
 | Read the complete XML format specification | `docs/xml_format_specification.md` |
+| Official AGENTS.md / Ground rules | `references/upstream/official-agents-guide.md` |
+| Official examples (components, globals) | `references/upstream/official-examples.md` |
+| CLI tools and MCP server | `references/upstream/cli-and-ai-tools.md` |
+| Translations / i18n | `references/upstream/translations.md` |
 
 ---
 
@@ -320,8 +336,8 @@ LVGL Pro has first-class AI agent support. Follow these principles:
 
 2. **Use the MCP server for live documentation lookups.** LVGL provides an
    official Model Context Protocol server at `https://lvgl.mcp.kapa.ai/`
-   (configured in each project's `.mcp.json`). Query it for version-specific
-   API details.
+   (configured in each project's `.claude/.mcp.json`). Query it for version-specific
+   API details. It is read-only.
 
 3. **Prefer `<component>` over `<widget>`.** Components are pure XML and
    require no C code. Only create a `<widget>` when you need custom rendering
@@ -331,8 +347,7 @@ LVGL Pro has first-class AI agent support. Follow these principles:
    palettes, typography scales, and spacing tokens. Only add new constants or
    styles when the existing design system doesn't cover the need.
 
-5. **Validate before delivering.** Always run `scripts/validate_project.py`
-   (or `lvglpro validate`) on generated output before presenting it to the user.
+5. **Iterate with the CLI workflow.** Write XML → run `lvglpro validate` → run `lvglpro screenshot` → visually verify the result. Guessing is not the same as knowing. Always run `scripts/validate_project.py` or `lvglpro validate` on generated output before presenting it to the user.
 
 ---
 

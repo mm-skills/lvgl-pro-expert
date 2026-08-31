@@ -1,0 +1,57 @@
+---
+title: Translations
+description: Guide to implementing multi-language support in LVGL Pro projects.
+---
+
+Implement multi-language support in your LVGL Pro projects using the XML translation module to define and manage translated strings efficiently.
+
+## Overview
+
+The XML translation module allows defining and using translated strings
+directly within XML files.
+
+It's built on top of LVGL's translation module.
+
+Check [LVGL's translation module documentation](https://lvgl.io/docs/open/main-modules/translation) to learn more about selecting the active language,
+retrieving translations, and fallback behavior.
+
+## Usage
+
+Example XML translation definition:
+
+``` xml
+<translations languages="en de hu">
+ <translation tag="dog" en="The dog" de="Der Hund" hu="A kutya"/>
+ <translation tag="cat" en="The cat" de="Die Katze" hu="A cica"/>
+ <translation tag="snake" en="A snake" de="Eine Schlange" hu="A kígyó"/>
+</translations>
+```
+
+In the root `translations` tag, the `languages` attribute defines the
+available languages, e.g., `languages="en de hu"`. Language codes are
+free-form, but ISO-style codes are recommended.
+
+Each `translation` defines a `tag`, which acts as the lookup key, and
+attributes for each language.
+
+Translations may be omitted — fallbacks will be applied when needed.
+Refer to the [LVGL translation](https://lvgl.io/docs/open/main-modules/translation) module documentation for details on fallback behavior.
+
+## Code export
+
+Based on the translations defined in XML, C code is exported in the format required by the
+[Translation module of LVGL](https://lvgl.io/docs/open/main-modules/translation), and it is also
+registered automatically when the UI is initialized.
+
+## Relation to fonts
+
+To effectively handle Asian (e.g. Chinese, Japanese, or Korean) characters it's recommended to use a
+`<tiny_ttf>` font, as it loads the characters to draw on demand from a single TTF file. This way:
+
+1. Any character can be rendered (assuming the font supports it)
+2. Any size can be rendered
+
+If you would like to use a C array font instead, it's recommended to use the `fallback` feature of the
+fonts to chain multiple fonts, e.g. one per language.
+
+Learn more on the [Fonts](./fonts) page.
