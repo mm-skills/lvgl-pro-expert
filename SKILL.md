@@ -403,7 +403,27 @@ LVGL Pro has first-class AI agent support. Follow these principles:
 
 The LVGL MCP server at `https://lvgl.mcp.kapa.ai/` answers questions grounded
 in the real LVGL documentation, forum, and source — not training-data recall.
-**Check which scenario applies to you before starting any task.**
+
+### Resolution Priority Order
+
+**Always follow this order — regardless of whether MCP is available:**
+
+1. references/format/widget-catalog.md   ← core props, instant, no network
+   (each entry includes an MCP query for extended props)
+2. Other references/ files               ← syntax, styles, data-binding, assets
+3. MCP server                            ← exhaustive enums, forum edge cases,
+                                            props beyond the catalog's core set
+4. tmp/lvgl_pro/lvgl_widgets_xml/        ← raw upstream XML (offline fallback)
+   v9.5.0/lv_<widget>.xml
+
+The `widget-catalog.md` documents the **core props** (used in >50% of instances)
+inline for instant lookup, and includes a tested **MCP query** at the end of
+each widget entry for the exhaustive long-tail. Use MCP only when the catalog
+is silent or you need enum values beyond the common set listed.
+
+### Connecting the MCP Server
+
+**Check which scenario applies:**
 
 ### Scenario A — MCP is wired up (Claude Code, Cursor, Windsurf, etc.)
 
@@ -460,26 +480,8 @@ answers documentation questions.
 
 ### Scenario C — No MCP available (offline, CI, restricted sandbox)
 
-This skill's `references/` folder is the MCP-less fallback. It was built
-specifically to give agents the same grounding without network access.
-
-**Priority order for resolving unknowns:**
-
-1. Read the widget schema directly from the upstream repo (if network available):
-   ```bash
-   curl -s https://raw.githubusercontent.com/lvgl/lvgl_pro/master/\
-        lvgl_widgets_xml/v9.5.0/lv_slider.xml
-   ```
-   Or clone once: `git clone --depth 1 https://github.com/lvgl/lvgl_pro /tmp/lvgl_pro`
-
-2. Read `references/format/widget-catalog.md` — covers all 30+ widgets.
-
-3. Read `docs/xml_format_specification.md` — the complete XML format spec.
-
-4. Read `references/upstream/official-agents-guide.md` — ground rules and sigils.
-
-5. Run `scripts/validate_project.py` — catches structural errors locally
-   without any network or CLI license.
+Follow the resolution priority order above. The `references/` folder and the
+`tmp/lvgl_pro/` upstream clone cover all widget props without network access.
 
 > **Never guess widget attributes.** If you cannot verify an attribute from
 > one of the above sources, do not include it. A shorter valid file is always
