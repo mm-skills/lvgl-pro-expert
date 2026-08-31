@@ -427,16 +427,27 @@ for all tools; only the filename and one key differ:
 | Claude Code | `.claude/.mcp.json` or `.mcp.json` | `mcpServers` |
 | Cursor | `.cursor/mcp.json` | `mcpServers` |
 | GitHub Copilot (VS Code) | `.vscode/mcp.json` | `servers` |
-| Gemini CLI / Antigravity | `.gemini/settings.json` (project) or `~/.gemini/settings.json` | `mcpServers` |
+| Gemini CLI / Antigravity | `~/.gemini/config/mcp_config.json` (global) | `mcpServers` |
 | Windsurf | `~/.codeium/windsurf/mcp_config.json` | `mcpServers` |
 
-**Claude Code / Cursor / Windsurf / Gemini:**
+**Claude Code / Cursor / Windsurf:**
 ```json
 {
   "mcpServers": {
     "lvgl": {
       "type": "http",
       "url": "https://lvgl.mcp.kapa.ai/"
+    }
+  }
+}
+```
+
+**Gemini CLI / Antigravity — note `serverUrl` not `type`/`url`:**
+```json
+{
+  "mcpServers": {
+    "lvgl": {
+      "serverUrl": "https://lvgl.mcp.kapa.ai/"
     }
   }
 }
