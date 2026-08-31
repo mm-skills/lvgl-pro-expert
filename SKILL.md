@@ -352,10 +352,8 @@ LVGL Pro has first-class AI agent support. Follow these principles:
    The official widget schemas at `lvgl_widgets_xml/<version>/lv_*.xml` are the
    source of truth. If an attribute isn't in the schema, it doesn't exist.
 
-2. **Use the MCP server for live documentation lookups.** LVGL provides an
-   official Model Context Protocol server at `https://lvgl.mcp.kapa.ai/`
-   (configured in each project's `.claude/.mcp.json`). Query it for version-specific
-   API details. It is read-only.
+2. **Ground with the MCP server or the skill's references — choose based on
+   your environment.** See the **MCP Harnesses** section below.
 
 3. **Prefer `<component>` over `<widget>`.** Components are pure XML and
    require no C code. Only create a `<widget>` when you need custom rendering
@@ -365,7 +363,100 @@ LVGL Pro has first-class AI agent support. Follow these principles:
    palettes, typography scales, and spacing tokens. Only add new constants or
    styles when the existing design system doesn't cover the need.
 
-5. **Iterate with the CLI workflow.** Write XML → run `lvglpro validate` → run `lvglpro screenshot` → visually verify the result. Guessing is not the same as knowing. Always run `scripts/validate_project.py` or `lvglpro validate` on generated output before presenting it to the user.
+5. **Iterate with the CLI workflow.** Write XML → run `lvglpro validate` →
+   run `lvglpro screenshot` → visually verify the result. Guessing is not the
+   same as knowing. Always run `scripts/validate_project.py` or
+   `lvglpro validate` on generated output before presenting it to the user.
+
+---
+
+## MCP Harnesses
+
+The LVGL MCP server at `https://lvgl.mcp.kapa.ai/` answers questions grounded
+in the real LVGL documentation, forum, and source — not training-data recall.
+**Check which scenario applies to you before starting any task.**
+
+### Scenario A — MCP is wired up (Claude Code, Cursor, Windsurf, etc.)
+
+If a project's `.claude/.mcp.json` (or equivalent) is present and approved,
+the MCP server is already available. Use it naturally:
+
+- Ask: *"look up the lv_chart series API"*
+- Ask: *"check the LVGL docs for scroll_snap values"*
+- Prompt phrasing *"look up"* / *"check the LVGL docs"* nudges the assistant
+  to invoke the server rather than answer from memory.
+
+Verify connection in Claude Code: run `/mcp` — you should see `lvgl` listed.
+
+### Scenario B — MCP not wired, but you can add it
+
+Add the MCP server config to your project root. The JSON shape is the same
+for all tools; only the filename and one key differ:
+
+| Tool | Config file | Root key |
+|---|---|---|
+| Claude Code | `.claude/.mcp.json` or `.mcp.json` | `mcpServers` |
+| Cursor | `.cursor/mcp.json` | `mcpServers` |
+| GitHub Copilot (VS Code) | `.vscode/mcp.json` | `servers` |
+| Gemini CLI / Antigravity | `.gemini/settings.json` (project) or `~/.gemini/settings.json` | `mcpServers` |
+| Windsurf | `~/.codeium/windsurf/mcp_config.json` | `mcpServers` |
+
+**Claude Code / Cursor / Windsurf / Gemini:**
+```json
+{
+  "mcpServers": {
+    "lvgl": {
+      "type": "http",
+      "url": "https://lvgl.mcp.kapa.ai/"
+    }
+  }
+}
+```
+
+**GitHub Copilot (VS Code) — note `servers` not `mcpServers`:**
+```json
+{
+  "servers": {
+    "lvgl": {
+      "type": "http",
+      "url": "https://lvgl.mcp.kapa.ai/"
+    }
+  }
+}
+```
+
+After adding the file, restart the assistant (or reload the project) and
+approve the server when prompted. The MCP server is **read-only** — it only
+answers documentation questions.
+
+### Scenario C — No MCP available (offline, CI, restricted sandbox)
+
+This skill's `references/` folder is the MCP-less fallback. It was built
+specifically to give agents the same grounding without network access.
+
+**Priority order for resolving unknowns:**
+
+1. Read the widget schema directly from the upstream repo (if network available):
+   ```bash
+   curl -s https://raw.githubusercontent.com/lvgl/lvgl_pro/master/\
+        lvgl_widgets_xml/v9.5.0/lv_slider.xml
+   ```
+   Or clone once: `git clone --depth 1 https://github.com/lvgl/lvgl_pro /tmp/lvgl_pro`
+
+2. Read `references/format/widget-catalog.md` — covers all 30+ widgets.
+
+3. Read `docs/xml_format_specification.md` — the complete XML format spec.
+
+4. Read `references/upstream/official-agents-guide.md` — ground rules and sigils.
+
+5. Run `scripts/validate_project.py` — catches structural errors locally
+   without any network or CLI license.
+
+> **Never guess widget attributes.** If you cannot verify an attribute from
+> one of the above sources, do not include it. A shorter valid file is always
+> better than a longer invalid one.
+
+→ Full CLI + MCP docs: `references/upstream/cli-and-ai-tools.md`
 
 ---
 
