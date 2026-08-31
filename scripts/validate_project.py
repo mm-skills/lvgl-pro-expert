@@ -218,6 +218,11 @@ class ProjectValidator:
             return False
 
         has_display = False
+        valid_color_formats = {
+            "l8", "i1", "i2", "i4", "i8", "a1", "a2", "a4", "a8",
+            "argb8888", "xrgb8888", "rgb565", "rgb565a8", "argb8565",
+            "rgb888", "auto", "raw", "raw_alpha", "native",
+        }
         for target in target_elems:
             display = target.find("display")
             if display is not None:
@@ -232,6 +237,14 @@ class ProjectValidator:
                         int(height)
                     except ValueError:
                         self.add_error(project_file, lines.get(display, 1), "'width' and 'height' in <display> must be integers")
+
+                color_fmt = display.get("color_format")
+                if color_fmt and color_fmt not in valid_color_formats:
+                    self.add_error(
+                        project_file,
+                        lines.get(display, 1),
+                        f"Invalid color_format '{color_fmt}'. Must be lowercase. Valid values: {', '.join(sorted(valid_color_formats))}",
+                    )
 
         if not has_display:
             self.add_error(project_file, lines.get(targets, 1), "At least one <target> must contain a <display> element")
@@ -279,6 +292,37 @@ class ProjectValidator:
                 name = child.get("name")
                 if name:
                     self.declared_styles.add(name)
+
+        # Validate font declarations
+        fonts_elem = root.find("fonts")
+        if fonts_elem is not None:
+            for child in fonts_elem:
+                if child.tag == "bin":
+                    as_file = child.get("as_file")
+                    if as_file is None:
+                        self.add_error(
+                            globals_file,
+                            lines.get(child, 1),
+                            f"<bin> font '{child.get('name', '?')}' is missing required 'as_file' attribute. "
+                            "Set as_file=\"false\" to embed as C array or as_file=\"true\" to load from filesystem.",
+                        )
+
+        # Validate image color_format values
+        valid_img_formats = {
+            "l8", "i1", "i2", "i4", "i8", "a1", "a2", "a4", "a8",
+            "argb8888", "xrgb8888", "rgb565", "rgb565a8", "argb8565",
+            "rgb888", "auto", "raw", "raw_alpha", "native",
+        }
+        images_elem = root.find("images")
+        if images_elem is not None:
+            for child in images_elem:
+                cf = child.get("color_format")
+                if cf and cf not in valid_img_formats:
+                    self.add_error(
+                        globals_file,
+                        lines.get(child, 1),
+                        f"Invalid image color_format '{cf}'. Must be lowercase. Valid values: {', '.join(sorted(valid_img_formats))}",
+                    )
 
         return True
 
@@ -411,13 +455,18 @@ class ProjectValidator:
         if root.tag != "screen":
             self.add_warning(file_path, lines.get(root, 1), f"Screen root tag is typically <screen>, found <{root.tag}>")
 
-        # Also collect local styles if defined in screen
+        # Collect local styles if defined in screen
         styles_block = root.find("styles")
         if styles_block is not None:
             for s in styles_block.findall("style"):
                 s_name = s.get("name")
                 if s_name:
                     self.declared_styles.add(s_name)
+
+        # Ensure <view> root widget container exists
+        view_elem = root.find("view")
+        if view_elem is None:
+            self.add_error(file_path, lines.get(root, 1), "Every <screen> must have exactly one <view> element as its root widget container.")
 
         seen_widget_names: Set[str] = set()
         for child in root:

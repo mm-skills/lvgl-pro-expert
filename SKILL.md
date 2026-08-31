@@ -38,6 +38,8 @@ my_project/
     <targets>
         <target name="default">
             <display width="480" height="320" />
+            <!-- Memory region is strictly required to hold assets -->
+            <memory name="int_flash" size="4MB" />
         </target>
     </targets>
 </project>
@@ -49,8 +51,8 @@ my_project/
     <api></api>
     <consts></consts>
     <subjects></subjects>
-    <images></images>
-    <fonts></fonts>
+    <images memory="int_flash"></images>
+    <fonts memory="int_flash"></fonts>
     <styles></styles>
 </globals>
 ```
@@ -230,6 +232,33 @@ Additionally, prefer using `width="content"`, `height="content"`, or `100%` over
 ### 15. Custom Widget Naming
 
 Always use the `wd_` prefix for custom widget XML files (e.g. `wd_list`, `wd_menu`) to clearly distinguish them from standard components or built-in widgets.
+
+### 16. `<bin>` fonts require `as_file` attribute
+
+Every `<bin>` font declaration **must** include `as_file="false"` (embed as
+C array) or `as_file="true"` (load from filesystem at runtime). Omitting it
+causes a validation error on code export even though the preview works fine.
+
+```xml
+✅ <bin name="montserrat_14" src_path="fonts/Montserrat-Medium.ttf"
+       size="14" bpp="4" as_file="false" range="0x20-0x7F" />
+
+❌ <bin name="montserrat_14" src_path="fonts/Montserrat-Medium.ttf"
+       size="14" bpp="4" range="0x20-0x7F" />
+```
+
+### 17. `color_format` values must be lowercase
+
+Enum values like `color_format` are **case-sensitive** and must be lowercase.
+The preview silently accepts uppercase but the code exporter rejects it.
+
+```xml
+✅ <display width="240" height="240" color_format="rgb565" />
+❌ <display width="240" height="240" color_format="RGB565" />
+
+✅ <data name="logo" src_path="images/logo.png" color_format="argb8888" />
+❌ <data name="logo" src_path="images/logo.png" color_format="ARGB8888" />
+```
 
 ---
 
