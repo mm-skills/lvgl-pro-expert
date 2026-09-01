@@ -225,29 +225,23 @@ Styles evaluate once, before props are bound. Therefore, an `$api_prop` **cannot
 
 ### 13. `<bin>` fonts require `as_file` attribute
 
-Every `<bin>` font declaration **must** include `as_file="false"` (embed as
-C array) or `as_file="true"` (load from filesystem at runtime). Omitting it
-causes a validation error on code export even though the preview works fine.
+Every `<bin>` font **must** include `as_file="false"` (embed as C array) or
+`as_file="true"` (load at runtime). Omitting it causes a validation error on
+code export even though the preview works fine.
 
 ```xml
-✅ <bin name="montserrat_14" src_path="fonts/Montserrat-Medium.ttf"
-       size="14" bpp="4" as_file="false" range="0x20-0x7F" />
-
-❌ <bin name="montserrat_14" src_path="fonts/Montserrat-Medium.ttf"
-       size="14" bpp="4" range="0x20-0x7F" />
+✅ <bin name="montserrat_14" src_path="fonts/Montserrat-Medium.ttf" size="14" bpp="4" as_file="false" range="0x20-0x7F" />
+❌ <bin name="montserrat_14" src_path="fonts/Montserrat-Medium.ttf" size="14" bpp="4" range="0x20-0x7F" />
 ```
 
 ### 14. `color_format` values must be lowercase
 
-Enum values like `color_format` are **case-sensitive** and must be lowercase.
+Enum values like `color_format` are **case-sensitive** — lowercase only.
 The preview silently accepts uppercase but the code exporter rejects it.
 
 ```xml
-✅ <display width="240" height="240" color_format="rgb565" />
-❌ <display width="240" height="240" color_format="RGB565" />
-
-✅ <data name="logo" src_path="images/logo.png" color_format="argb8888" />
-❌ <data name="logo" src_path="images/logo.png" color_format="ARGB8888" />
+✅ color_format="rgb565"    ✅ color_format="argb8888"
+❌ color_format="RGB565"    ❌ color_format="ARGB8888"
 ```
 
 ---
@@ -332,6 +326,54 @@ Option B — If the LVGL Pro CLI is installed:
 ```bash
 lvglpro validate /path/to/project/
 ```
+
+### Step 9: Write the Project AGENTS.md
+
+The scaffold script creates a generic `AGENTS.md` with ground rules (sigils,
+file kinds, pitfalls). Your job is to **distill the project-specific knowledge**
+into it so the next agent that opens this project is immediately productive.
+
+Think of AGENTS.md as a knowledge transfer document — not for humans (that's
+README.md), but for the next AI agent. It should answer: *"What does a new
+agent need to know to edit this project correctly without the skill installed?"*
+
+**Keep it under 150 lines.** If it grows beyond that, move detail into
+`docs/` files and point to them.
+
+**What to add** (append to or update the generated template):
+
+```markdown
+## Project Overview
+<!-- One paragraph: what this UI does, what hardware/display it targets -->
+
+## Screen Inventory
+<!-- Table: filename | purpose | key widgets | navigates to -->
+
+## Design System
+<!-- The constants, styles, colour palette, and typography from globals.xml
+     so the next agent reuses them instead of inventing ad-hoc values -->
+
+## Subjects (Reactive Data)
+<!-- Table: subject name | type | what it represents | who writes it -->
+
+## Components
+<!-- Which reusable components exist and when to use each one -->
+
+## Architecture Decisions
+<!-- Non-obvious choices: why this layout, why this data flow,
+     why a <widget> was used instead of a <component> -->
+
+## Boundaries
+<!-- Files/sections the agent should NOT touch, or constraints
+     on what can change (e.g., "do not rename subjects — firmware
+     depends on these exact names") -->
+```
+
+**Rules for writing it:**
+- Be minimal — only include what isn't discoverable from the XML itself
+- Be specific — quote actual names, values, file paths from this project
+- No generic advice — the ground rules section already covers LVGL basics
+- Update it when the project changes — treat it as living documentation
 
 ---
 
