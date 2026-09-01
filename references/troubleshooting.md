@@ -64,3 +64,12 @@ Run the automated validator script before opening in the LVGL Pro Editor:
 ```bash
 python3 scripts/validate_project.py /path/to/my_project/
 ```
+
+## 5. Generator Code Validation Pitfalls
+
+When running `lvglpro generate`, the schema validator is exceptionally strict and catches issues the local validator script might miss:
+
+1. **Slots MUST use `<lv_obj>`:** In component views, you define the insertion point for a `<slot>` by placing a widget with the same `name`. If you follow documentation blindly and write `<container name="content" />`, the generator will fail with `Unknown element: container` (unless you explicitly defined a `container` component). **Always use `<lv_obj name="slot_name" width="100%" height="100%">`** with a transparent style for slot placeholders.
+2. **Prop Subject Types:** When defining a `<prop>` that takes a subject, use `type="subject"`. Do not use `type="subject_int"` or `type="subject_string"` in the XML api—these will cause an `Invalid enum value` error. The generator handles the typing automatically.
+3. **Gestures are Generic:** You cannot bind directional gestures like `trigger="gesture_left"` or `trigger="gesture_up"` directly in the XML `<event_cb>`. The only valid LVGL v9 gesture trigger is `trigger="gesture"`. Route it to a single C callback (e.g. `on_gesture(lv_event_t* e)`) and determine the direction natively using `lv_indev_get_gesture_dir(lv_indev_active())` which returns `LV_DIR_LEFT`, `LV_DIR_RIGHT`, `LV_DIR_TOP`, or `LV_DIR_BOTTOM`.
+4. **C++ Macro Gotchas:** Speaking of gestures, LVGL v9 uses `LV_DIR_TOP` and `LV_DIR_BOTTOM`. Do **not** use `LV_DIR_UP` or `LV_DIR_DOWN` in your C++ code.
