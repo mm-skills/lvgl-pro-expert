@@ -62,6 +62,54 @@ SCREEN_XML_TEMPLATE = """<screen>
 </screen>
 """
 
+AGENTS_MD_TEMPLATE = """# LVGL Pro — Agent Ground Rules
+
+This project uses [LVGL Pro](https://lvgl.io/docs/pro) XML format.
+Before editing any XML, read these rules.
+
+## Three Sigils
+
+| Sigil | Meaning | Example |
+|-------|---------|---------|
+| `$`   | Component API prop | `text="$title"` |
+| `#`   | Named constant (from `<consts>`) | `style_text_color="#accent"` |
+| `{{}}`  | One-time expression (evaluated once) | `width="{{parent.width / 2}}"` |
+
+## File Kinds
+
+| Root tag | Purpose | Needs C code? |
+|----------|---------|---------------|
+| `<component>` | Reusable XML-only UI block | No |
+| `<screen>` | Top-level screen | No |
+| `<widget>` | Custom widget with C behaviour | Yes |
+
+## Key Rules
+
+1. **Never invent attributes.** Check the widget schema at
+   `lvgl_widgets_xml/v9.5.0/lv_<widget>.xml` or use the MCP server.
+2. **Styles initialise once.** `$api_prop` cannot go inside a `<style>` block —
+   use it directly on the `<view>` element instead.
+3. **Every widget needs a `name` attribute** (becomes the C variable name).
+4. **Dropdown/roller options** use `&#10;` for line separators, not `\\n`.
+5. **Style selectors** use hyphens: `style_bg_color-indicator-checked="0x4CAF50"`.
+6. **Never edit generated C files** — they are overwritten on every Export Code.
+7. **`<bin>` fonts require `as_file="false"` or `as_file="true"`**.
+8. **`color_format` values must be lowercase** (`rgb565` not `RGB565`).
+
+## Validation
+
+```bash
+lvglpro validate .          # Pro/Platform license
+python3 scripts/validate_project.py .  # Free fallback
+```
+
+## MCP Server
+
+The LVGL MCP server provides grounded documentation answers:
+- Endpoint: `https://lvgl.mcp.kapa.ai/` (read-only)
+- Config is in `.claude/.mcp.json` if present
+"""
+
 
 def parse_screen_names(screens_arg: Optional[List[str]]) -> List[str]:
     """Parse screen names from CLI arguments, handling strings and lists."""
@@ -122,7 +170,10 @@ def generate_project(
     # 2. Generate globals.xml
     (target_dir / "globals.xml").write_text(GLOBALS_XML_TEMPLATE, encoding="utf-8")
 
-    # 3. Generate screen XML files
+    # 3. Generate AGENTS.md (agent ground rules for subsequent AI editing)
+    (target_dir / "AGENTS.md").write_text(AGENTS_MD_TEMPLATE, encoding="utf-8")
+
+    # 4. Generate screen XML files
     screen_list = parse_screen_names(screens)
     for screen_raw_name in screen_list:
         filename = format_screen_filename(screen_raw_name)
@@ -188,6 +239,7 @@ def main() -> int:
         print(f"LVGL Pro project '{args.name}' successfully created at: {out_path.resolve()}")
         print(f"  - {out_path / 'project.xml'}")
         print(f"  - {out_path / 'globals.xml'}")
+        print(f"  - {out_path / 'AGENTS.md'}")
         for s in (out_path / "screens").glob("*.xml"):
             print(f"  - {s}")
         return 0

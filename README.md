@@ -11,10 +11,11 @@ export valid LVGL C code for embedded displays.
 
 ## Features
 
-- **10-item anti-pitfall checklist** — catches the mistakes that cause silent failures
+- **14-item anti-pitfall checklist** — catches the mistakes that cause silent failures
 - **Progressive reference system** — widget catalog, style system, data binding, animations
 - **Validation script** — checks generated XML against known widget types and attribute schemas
-- **Scaffold generator** — creates minimal project structure from the command line
+- **Scaffold generator** — creates project structure with embedded AGENTS.md for AI continuity
+- **Audit script** — verifies skill references against upstream widget schemas
 - **3 example projects** — hello world, thermostat with data binding, settings with theming
 
 ## Project Structure
@@ -28,10 +29,12 @@ references/
   widgets/                  ← Input, display, container, and custom widget guides
   components/               ← Component system, slots, inheritance
   targets/                  ← Ecosystem configs (Zephyr, Linux, VSCode, UI-only)
+  upstream/                 ← Official LVGL Pro docs, AGENTS.md, CLI/MCP, blog conventions
   ux/                       ← Embedded display design guidelines
 scripts/
-  generate_project.py       ← Scaffold a new project
+  generate_project.py       ← Scaffold a new project (incl. AGENTS.md)
   validate_project.py       ← Validate XML structure and references
+  audit_skill.py            ← Audit skill refs against upstream widget schemas
 examples/
   hello_world/              ← Minimal 3-file project
   thermostat/               ← Data binding showcase

@@ -43,8 +43,18 @@ In Claude Code, run `/mcp` to confirm the `lvgl` server is connected and to see 
 
 ## Adding it manually
 
-If your project doesn't already include the configuration, add it yourself. For **Claude Code**, create a `.claude/.mcp.json` file in your project's root:
+If your project doesn't already include the configuration, add it yourself.
+The JSON shape is the same for all tools; only the filename and one key differ:
 
+| Tool | Config file | Root key |
+|---|---|---|
+| Claude Code | `.claude/.mcp.json` or `.mcp.json` | `mcpServers` |
+| Cursor | `.cursor/mcp.json` | `mcpServers` |
+| GitHub Copilot (VS Code) | `.vscode/mcp.json` | `servers` |
+| Gemini CLI / Antigravity | `~/.gemini/config/mcp_config.json` (global) | `mcpServers` |
+| Windsurf | `~/.codeium/windsurf/mcp_config.json` | `mcpServers` |
+
+**Claude Code / Cursor / Windsurf:**
 ```json
 {
   "mcpServers": {
@@ -56,17 +66,53 @@ If your project doesn't already include the configuration, add it yourself. For 
 }
 ```
 
+**Gemini CLI / Antigravity** — note `serverUrl` not `type`/`url`:
+```json
+{
+  "mcpServers": {
+    "lvgl": {
+      "serverUrl": "https://lvgl.mcp.kapa.ai/"
+    }
+  }
+}
+```
+
+> **Antigravity setup:** After adding the config, open **Customizations →
+> Installed MCP Servers** and click the **Authenticate** button next to `lvgl`.
+> Complete the browser-based Google/GitHub login. The tool
+> (`search_lvgl_light_and_versatile_graphics_library_knowledge_sources`) is
+> lazy-loaded and may appear "disabled" in the UI — this is cosmetic; it works
+> when called via `call_mcp_tool`.
+
+**GitHub Copilot (VS Code)** — note `servers` not `mcpServers`:
+```json
+{
+  "servers": {
+    "lvgl": {
+      "type": "http",
+      "url": "https://lvgl.mcp.kapa.ai/"
+    }
+  }
+}
+```
+
 Restart the assistant (or reload the project) and approve the server when prompted.
+The MCP server is **read-only** — it only answers documentation questions.
 
-Other tools use the same idea but look for a different file in a slightly different shape. Most reuse the `mcpServers` structure above. The main differences are the file location and, for VS Code/Copilot, the top-level key (`servers` instead of `mcpServers`):
+### When MCP is not available (offline, CI, restricted sandbox)
 
-| Tool | Config file |
-| --- | --- |
-| Claude Code | `.mcp.json` (project root) or `~/.claude.json` (global) |
-| Cursor | `.cursor/mcp.json` (project) or `~/.cursor/mcp.json` (global) |
-| GitHub Copilot (VS Code) | `.vscode/mcp.json`, uses the `servers` key |
-| Gemini CLI | `.gemini/settings.json` (project) or `~/.gemini/settings.json` |
-| Windsurf | `~/.codeium/windsurf/mcp_config.json` |
+Use the skill's `references/` folder as the MCP-less fallback. Priority order:
+
+1. `references/format/widget-catalog.md` — core props, instant, no network
+2. Other `references/` files — syntax, styles, data-binding, assets
+3. Upstream XML schemas (if network available):
+   ```bash
+   curl -s https://raw.githubusercontent.com/lvgl/lvgl_pro/master/\
+        lvgl_widgets_xml/v9.5.0/lv_slider.xml
+   ```
+   Or clone once: `git clone --depth 1 https://github.com/lvgl/lvgl_pro /tmp/lvgl_pro`
+4. `docs/xml_format_specification.md` — the complete XML format spec
+5. `scripts/validate_project.py` — catches structural errors locally
 
 ## `lvgl_pro` repo: Real XML to learn from
 

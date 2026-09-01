@@ -216,24 +216,14 @@ Styles evaluate once, before props are bound. Therefore, an `$api_prop` **cannot
 <view style_bg_color="$color"/>
 ```
 
-### 12. Project Naming Conflicts
+### 12. Project Hygiene
 
-Never name your project `lvgl`. This will cause a namespace conflict with the LVGL library itself. Choose a unique name specific to your product.
+- Never name your project `lvgl` — namespace conflict with the LVGL library
+- Never edit generated C files — overwritten on every Export Code
+- Avoid inline styles — define named `<style>` blocks; prefer `width="content"` / `100%` over hardcoded px
+- Custom widget files use `wd_` prefix (`wd_list.xml`, `wd_menu.xml`)
 
-### 13. Editing Generated C Files
-
-Never edit generated C files manually. Any manual changes made to the generated C files will be overwritten and lost the next time you hit "Export Code" in the editor. Modify the source XML instead.
-
-### 14. Inline Styles and Sizing
-
-Never write inline styles in your XML (e.g., `<lv_obj style_bg_color="0x000000" />`). Always define named `<style>` blocks in a `<styles>` section. 
-Additionally, prefer using `width="content"`, `height="content"`, or `100%` over hardcoded pixel values to make components flexible and reusable.
-
-### 15. Custom Widget Naming
-
-Always use the `wd_` prefix for custom widget XML files (e.g. `wd_list`, `wd_menu`) to clearly distinguish them from standard components or built-in widgets.
-
-### 16. `<bin>` fonts require `as_file` attribute
+### 13. `<bin>` fonts require `as_file` attribute
 
 Every `<bin>` font declaration **must** include `as_file="false"` (embed as
 C array) or `as_file="true"` (load from filesystem at runtime). Omitting it
@@ -247,7 +237,7 @@ causes a validation error on code export even though the preview works fine.
        size="14" bpp="4" range="0x20-0x7F" />
 ```
 
-### 17. `color_format` values must be lowercase
+### 14. `color_format` values must be lowercase
 
 Enum values like `color_format` are **case-sensitive** and must be lowercase.
 The preview silently accepts uppercase but the code exporter rejects it.
@@ -382,7 +372,7 @@ LVGL Pro has first-class AI agent support. Follow these principles:
    source of truth. If an attribute isn't in the schema, it doesn't exist.
 
 2. **Ground with the MCP server or the skill's references — choose based on
-   your environment.** See the **MCP Harnesses** section below.
+   your environment.** See the **MCP & Documentation Grounding** section below.
 
 3. **Prefer `<component>` over `<widget>`.** Components are pure XML and
    require no C code. Only create a `<widget>` when you need custom rendering
@@ -399,113 +389,19 @@ LVGL Pro has first-class AI agent support. Follow these principles:
 
 ---
 
-## MCP Harnesses
+## MCP & Documentation Grounding
 
-The LVGL MCP server at `https://lvgl.mcp.kapa.ai/` answers questions grounded
-in the real LVGL documentation, forum, and source — not training-data recall.
+**Resolution priority (always follow this order):**
 
-### Resolution Priority Order
-
-**Always follow this order — regardless of whether MCP is available:**
-
-1. references/format/widget-catalog.md   ← core props, instant, no network
-   (each entry includes an MCP query for extended props)
-2. Other references/ files               ← syntax, styles, data-binding, assets
-3. MCP server                            ← exhaustive enums, forum edge cases,
-                                            props beyond the catalog's core set
-4. tmp/lvgl_pro/lvgl_widgets_xml/        ← raw upstream XML (offline fallback)
-   v9.5.0/lv_<widget>.xml
-
-The `widget-catalog.md` documents the **core props** (used in >50% of instances)
-inline for instant lookup, and includes a tested **MCP query** at the end of
-each widget entry for the exhaustive long-tail. Use MCP only when the catalog
-is silent or you need enum values beyond the common set listed.
-
-### Connecting the MCP Server
-
-**Check which scenario applies:**
-
-### Scenario A — MCP is wired up (Claude Code, Cursor, Windsurf, etc.)
-
-If a project's `.claude/.mcp.json` (or equivalent) is present and approved,
-the MCP server is already available. Use it naturally:
-
-- Ask: *"look up the lv_chart series API"*
-- Ask: *"check the LVGL docs for scroll_snap values"*
-- Prompt phrasing *"look up"* / *"check the LVGL docs"* nudges the assistant
-  to invoke the server rather than answer from memory.
-
-Verify connection in Claude Code: run `/mcp` — you should see `lvgl` listed.
-
-### Scenario B — MCP not wired, but you can add it
-
-Add the MCP server config to your project root. The JSON shape is the same
-for all tools; only the filename and one key differ:
-
-| Tool | Config file | Root key |
-|---|---|---|
-| Claude Code | `.claude/.mcp.json` or `.mcp.json` | `mcpServers` |
-| Cursor | `.cursor/mcp.json` | `mcpServers` |
-| GitHub Copilot (VS Code) | `.vscode/mcp.json` | `servers` |
-| Gemini CLI / Antigravity | `~/.gemini/config/mcp_config.json` (global) | `mcpServers` |
-| Windsurf | `~/.codeium/windsurf/mcp_config.json` | `mcpServers` |
-
-**Claude Code / Cursor / Windsurf:**
-```json
-{
-  "mcpServers": {
-    "lvgl": {
-      "type": "http",
-      "url": "https://lvgl.mcp.kapa.ai/"
-    }
-  }
-}
-```
-
-**Gemini CLI / Antigravity — note `serverUrl` not `type`/`url`:**
-```json
-{
-  "mcpServers": {
-    "lvgl": {
-      "serverUrl": "https://lvgl.mcp.kapa.ai/"
-    }
-  }
-}
-```
-
-> **Antigravity setup:** After adding the config, open **Customizations →
-> Installed MCP Servers** and click the **Authenticate** button next to `lvgl`.
-> Complete the browser-based Google/GitHub login. The tool
-> (`search_lvgl_light_and_versatile_graphics_library_knowledge_sources`) is
-> lazy-loaded and may appear "disabled" in the UI — this is cosmetic; it works
-> when called via `call_mcp_tool`.
-
-**GitHub Copilot (VS Code) — note `servers` not `mcpServers`:**
-```json
-{
-  "servers": {
-    "lvgl": {
-      "type": "http",
-      "url": "https://lvgl.mcp.kapa.ai/"
-    }
-  }
-}
-```
-
-After adding the file, restart the assistant (or reload the project) and
-approve the server when prompted. The MCP server is **read-only** — it only
-answers documentation questions.
-
-### Scenario C — No MCP available (offline, CI, restricted sandbox)
-
-Follow the resolution priority order above. The `references/` folder and the
-`tmp/lvgl_pro/` upstream clone cover all widget props without network access.
+1. `references/format/widget-catalog.md` — core props, instant, no network
+2. Other `references/` files — syntax, styles, data-binding, assets
+3. MCP server (`https://lvgl.mcp.kapa.ai/`) — exhaustive enums, forum edge cases
+4. Upstream XML schemas — `lvgl_widgets_xml/v9.5.0/lv_<widget>.xml`
 
 > **Never guess widget attributes.** If you cannot verify an attribute from
-> one of the above sources, do not include it. A shorter valid file is always
-> better than a longer invalid one.
+> one of the above sources, do not include it.
 
-→ Full CLI + MCP docs: `references/upstream/cli-and-ai-tools.md`
+→ MCP setup (per-tool config, Antigravity OAuth, offline fallback): `references/upstream/cli-and-ai-tools.md`
 
 ---
 
