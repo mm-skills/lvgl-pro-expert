@@ -73,3 +73,8 @@ When running `lvglpro generate`, the schema validator is exceptionally strict an
 2. **Prop Subject Types:** When defining a `<prop>` that takes a subject, use `type="subject"`. Do not use `type="subject_int"` or `type="subject_string"` in the XML api—these will cause an `Invalid enum value` error. The generator handles the typing automatically.
 3. **Gestures are Generic:** You cannot bind directional gestures like `trigger="gesture_left"` or `trigger="gesture_up"` directly in the XML `<event_cb>`. The only valid LVGL v9 gesture trigger is `trigger="gesture"`. Route it to a single C callback (e.g. `on_gesture(lv_event_t* e)`) and determine the direction natively using `lv_indev_get_gesture_dir(lv_indev_active())` which returns `LV_DIR_LEFT`, `LV_DIR_RIGHT`, `LV_DIR_TOP`, or `LV_DIR_BOTTOM`.
 4. **C++ Macro Gotchas:** Speaking of gestures, LVGL v9 uses `LV_DIR_TOP` and `LV_DIR_BOTTOM`. Do **not** use `LV_DIR_UP` or `LV_DIR_DOWN` in your C++ code.
+
+5. **Size Constants:** Do not use C macros like `LV_SIZE_CONTENT` or `lv_size_content` in XML. Use `width="content"` or `height="content"`.
+6. **Boolean Properties:** For boolean style properties (like `style_arc_rounded`), do not use `"1"` or `"0"`. The validator expects `"true"` or `"false"`.
+7. **Arc Range:** The `<lv_arc>` widget uses `min_value` and `max_value`, not `min` and `max`.
+8. **Value Binding Syntax:** `bind_value` is an *attribute* on the widget (e.g., `<lv_arc bind_value="subject_name" />`), it is **not** a child element. Only complex bindings (`<bind_flag_if_eq>`) and events (`<subject_set_int_event>`) are child tags.
