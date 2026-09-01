@@ -447,10 +447,10 @@ for all tools; only the filename and one key differ:
 | Claude Code | `.claude/.mcp.json` or `.mcp.json` | `mcpServers` |
 | Cursor | `.cursor/mcp.json` | `mcpServers` |
 | GitHub Copilot (VS Code) | `.vscode/mcp.json` | `servers` |
-| Gemini CLI / Antigravity | `.gemini/settings.json` (project) or `~/.gemini/settings.json` | `mcpServers` |
+| Gemini CLI / Antigravity | `~/.gemini/config/mcp_config.json` (global) | `mcpServers` |
 | Windsurf | `~/.codeium/windsurf/mcp_config.json` | `mcpServers` |
 
-**Claude Code / Cursor / Windsurf / Gemini:**
+**Claude Code / Cursor / Windsurf:**
 ```json
 {
   "mcpServers": {
@@ -461,6 +461,24 @@ for all tools; only the filename and one key differ:
   }
 }
 ```
+
+**Gemini CLI / Antigravity — note `serverUrl` not `type`/`url`:**
+```json
+{
+  "mcpServers": {
+    "lvgl": {
+      "serverUrl": "https://lvgl.mcp.kapa.ai/"
+    }
+  }
+}
+```
+
+> **Antigravity setup:** After adding the config, open **Customizations →
+> Installed MCP Servers** and click the **Authenticate** button next to `lvgl`.
+> Complete the browser-based Google/GitHub login. The tool
+> (`search_lvgl_light_and_versatile_graphics_library_knowledge_sources`) is
+> lazy-loaded and may appear "disabled" in the UI — this is cosmetic; it works
+> when called via `call_mcp_tool`.
 
 **GitHub Copilot (VS Code) — note `servers` not `mcpServers`:**
 ```json
